@@ -4,15 +4,19 @@ import {
 	View,
 	Dimensions,
 	FlatList,
+	TouchableWithoutFeedback,
+	Button,
 	SafeAreaView, ScrollView, Text, StyleSheet, Linking, Platform, ImageBackground, TouchableOpacity, Image, Animated
 } from 'react-native';
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 import { get, set, cloneDeep } from 'lodash';
 
+import AwesomeAlert from 'react-native-awesome-alerts';
+
 const handleCheckLoose = (data) => {
 	for (let row = 3; row >= 0; row--) {
 		for (let col = 3; col >= 0; col--) {
-			if (get(data, [row,col,'val'], NaN) === get(data, [row-1,col,'val'], NaN) || get(data, [row,col,'val'], NaN) === get(data, [row,col-1,'val'], NaN)) {
+			if (get(data, [row, col, 'val'], NaN) === get(data, [row - 1, col, 'val'], NaN) || get(data, [row, col, 'val'], NaN) === get(data, [row, col - 1, 'val'], NaN)) {
 				return false;
 			}
 		}
@@ -33,33 +37,34 @@ const [initArr] = randomInsert([
 ])
 // fadeOutDown
 const fadeOutDown = {
-  0: {
-    opacity: 1,
-    scale: 1,
-  },
-  0.5: {
-    opacity: 1,
-    scale: 0.3,
-  },
-  1: {
-    opacity: 0,
-    scale: 0,
-  },
+	0: {
+		opacity: 1,
+		scale: 1,
+	},
+	0.5: {
+		opacity: 1,
+		scale: 0.3,
+	},
+	1: {
+		opacity: 0,
+		scale: 0,
+	},
 };
 const plusIn = 'bounce'
 const plusIn1 = {
-  0: {
-    scale: 1.5,
-  },
-  0.5: {
-    scale: 0.9,
-  },
-  1: {
-    scale: 1,
-  },
+	0: {
+		scale: 1.5,
+	},
+	0.5: {
+		scale: 0.9,
+	},
+	1: {
+		scale: 1,
+	},
 }
 const dnd = () => {
 	const [data, setData] = useState(initArr);
+	const [isLoosed, setLoosed] = useState(true);
 	const that = useRef(null);
 	const config = {
 		velocityThreshold: 0.3,
@@ -93,10 +98,13 @@ const dnd = () => {
 		}
 
 		if (direct) {
-			const [newDataWithInsert, score, isLoose] =  randomInsert(newData, that.current === direct)
+			const [newDataWithInsert, score, isLoose] = randomInsert(newData, that.current === direct)
 			setData(newDataWithInsert);
 			that.current = direct;
 			setReload(score);
+			if (isLoose) {
+				setLoosed(true);
+			}
 			// alert('you are loose')
 		}
 
@@ -126,7 +134,6 @@ const dnd = () => {
 														styles.cell,
 														{
 															backgroundColor: handleColor(i.val),
-
 														}
 													]}
 													key={`${reload}${indexRow}${indexCol}`}>
@@ -150,6 +157,26 @@ const dnd = () => {
 						})
 					}
 				</View>
+
+				<AwesomeAlert
+          show={isLoosed}
+          showProgress={false}
+          title="Game Over"
+          message="Do you want a new game"
+          closeOnTouchOutside={true}
+          closeOnHardwareBackPress={false}
+          showCancelButton={true}
+          showConfirmButton={true}
+          cancelText="Close"
+          confirmText="New Game"
+          confirmButtonColor="#DD6B55"
+          onCancelPressed={() => {
+            setLoosed(false)
+          }}
+          onConfirmPressed={() => {
+            setLoosed(false); setReload(0); setData(initArr)
+          }}
+        />
 			</View>
 		</GestureRecognizer>
 	)
@@ -243,7 +270,7 @@ const convertDown = (input) => {
 		}
 	}
 	listAni.map(i => {
-		const {row, col, ani} = i;
+		const { row, col, ani } = i;
 		data[row][col].ani = ani;
 	})
 	return data;
@@ -327,11 +354,11 @@ function randomInsert(data, isSameDirect = false) {
 				isUpdate = true;
 			}
 			if (data[row][col].ani == 'zoomInUp') data[row][col].ani = ''
-			score+=data[row][col].val
+			score += data[row][col].val
 		}
 	}
-	if(emptyPotion.length === 0) {
-		if(handleCheckLoose(data)) return [data, score, true];
+	if (emptyPotion.length === 0) {
+		if (handleCheckLoose(data)) return [data, score, true];
 	} else if (!isSameDirect || isUpdate) {
 		const intR = Math.floor(Math.random() * 10);
 
@@ -360,7 +387,7 @@ function randomInsert(data, isSameDirect = false) {
 
 const show = (data) => {
 	data.map(i => {
-		console.log(i.map(z=>z.ani).join(' '));
+		console.log(i.map(z => z.ani).join(' '));
 	})
 }
 
@@ -386,3 +413,19 @@ const colorMap = {
 const handleColor = (i) => {
 	return colorMap[i] ? colorMap[i] : '#cdc0b5'
 }
+
+
+const stylesModal = StyleSheet.create({
+	content: {
+		backgroundColor: 'white',
+		padding: 22,
+		justifyContent: 'center',
+		alignItems: 'center',
+		borderRadius: 4,
+		borderColor: 'rgba(0, 0, 0, 0.1)',
+	},
+	contentTitle: {
+		fontSize: 20,
+		marginBottom: 12,
+	},
+});
