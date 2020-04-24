@@ -3,20 +3,18 @@ import * as Animatable from 'react-native-animatable';
 import {
 	View,
 	Dimensions,
-	FlatList,
-	TouchableWithoutFeedback,
-	Button,
-	SafeAreaView, ScrollView, Text, StyleSheet, Linking, Platform, ImageBackground, TouchableOpacity, Image, Animated
+	Text, StyleSheet,
 } from 'react-native';
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
-import { get, set, cloneDeep } from 'lodash';
+import { get, cloneDeep } from 'lodash';
 
 import AwesomeAlert from 'react-native-awesome-alerts';
 
 const handleCheckLoose = (data) => {
 	for (let row = 3; row >= 0; row--) {
 		for (let col = 3; col >= 0; col--) {
-			if (get(data, [row, col, 'val'], NaN) === get(data, [row - 1, col, 'val'], NaN) || get(data, [row, col, 'val'], NaN) === get(data, [row, col - 1, 'val'], NaN)) {
+			if (get(data, [row, col, 'val'], NaN) === get(data, [row - 1, col, 'val'], NaN)
+				|| get(data, [row, col, 'val'], NaN) === get(data, [row, col - 1, 'val'], NaN)) {
 				return false;
 			}
 		}
@@ -33,6 +31,14 @@ const [initArr] = randomInsert([
 	[{ ...base }, { ...base }, { ...base }, { ...base }],
 	[{ ...base }, { ...base }, { ...base }, { ...base }],
 	[{ ...base }, { ...base }, { ...base }, { ...base }],
+
+])
+
+const [initArrFail] = randomInsert([
+	[{ ...base, val: 2 }, { ...base, val: 4 }, { ...base, val: 2 }, { ...base, val: 4 }],
+	[{ ...base, val: 4 }, { ...base, val: 2 }, { ...base, val: 4 }, { ...base, val: 2 }],
+	[{ ...base, val: 2 }, { ...base, val: 4 }, { ...base, val: 2 }, { ...base, val: 4 }],
+	[{ ...base, val: 4 }, { ...base, val: 2 }, { ...base, val: 4 }, { ...base, val: 2 }],
 
 ])
 // fadeOutDown
@@ -64,7 +70,7 @@ const plusIn1 = {
 }
 const dnd = () => {
 	const [data, setData] = useState(initArr);
-	const [isLoosed, setLoosed] = useState(true);
+	const [isLoosed, setLoosed] = useState(false);
 	const that = useRef(null);
 	const config = {
 		velocityThreshold: 0.3,
@@ -159,24 +165,24 @@ const dnd = () => {
 				</View>
 
 				<AwesomeAlert
-          show={isLoosed}
-          showProgress={false}
-          title="Game Over"
-          message="Do you want a new game"
-          closeOnTouchOutside={true}
-          closeOnHardwareBackPress={false}
-          showCancelButton={true}
-          showConfirmButton={true}
-          cancelText="Close"
-          confirmText="New Game"
-          confirmButtonColor="#DD6B55"
-          onCancelPressed={() => {
-            setLoosed(false)
-          }}
-          onConfirmPressed={() => {
-            setLoosed(false); setReload(0); setData(initArr)
-          }}
-        />
+					show={isLoosed}
+					showProgress={false}
+					title="Game Over"
+					message="Do you want a new game"
+					closeOnTouchOutside={true}
+					closeOnHardwareBackPress={false}
+					showCancelButton={true}
+					showConfirmButton={true}
+					cancelText="Close"
+					confirmText="New Game"
+					confirmButtonColor="#DD6B55"
+					onCancelPressed={() => {
+						setLoosed(false)
+					}}
+					onConfirmPressed={() => {
+						setLoosed(false); setReload(0); setData(initArr)
+					}}
+				/>
 			</View>
 		</GestureRecognizer>
 	)
@@ -358,7 +364,10 @@ function randomInsert(data, isSameDirect = false) {
 		}
 	}
 	if (emptyPotion.length === 0) {
-		if (handleCheckLoose(data)) return [data, score, true];
+		if (handleCheckLoose(data)) {
+			console.log(' --- loose --- ')
+			return [data, score, true];
+		}
 	} else if (!isSameDirect || isUpdate) {
 		const intR = Math.floor(Math.random() * 10);
 
