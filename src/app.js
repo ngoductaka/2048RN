@@ -4,9 +4,11 @@ import {
 	View,
 	Dimensions,
 	Text, StyleSheet,
+	TouchableOpacity
 } from 'react-native';
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 import { get, cloneDeep } from 'lodash';
+import { LoginButton, AccessToken, LoginManager } from 'react-native-fbsdk';
 
 import AwesomeAlert from 'react-native-awesome-alerts';
 
@@ -116,6 +118,26 @@ const dnd = () => {
 
 	}, [data, reload]);
 	// show(data);
+	const handleLoginFake = () => {
+		LoginManager.logInWithPermissions(["public_profile"]).then(
+			function (result) {
+				if (result.isCancelled) {
+					console.log("Login cancelled");
+				} else {
+					console.log(
+						"Login success with permissions: " +
+						result.grantedPermissions.toString()
+					);
+					AccessToken.getCurrentAccessToken().then(data => {
+						console.log(data.accessToken.toString())
+					})
+				}
+			},
+			function (error) {
+				console.log("Login fail with error: " + error);
+			}
+		);
+	}
 	return (
 		<GestureRecognizer
 			onSwipe={onSwipe}
@@ -126,6 +148,9 @@ const dnd = () => {
 			}}
 		>
 			<View style={styles.container}>
+				<TouchableOpacity onPress={handleLoginFake} > 
+					<Text> login facebook </Text>
+				</TouchableOpacity>
 				<Text style={{ fontSize: 16 }}> Score: {reload}</Text>
 				<View style={styles.main}>
 					{
