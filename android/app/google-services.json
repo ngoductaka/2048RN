@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "275839170462",
+    "firebase_url": "https://dnd2048-93470.firebaseio.com",
+    "project_id": "dnd2048-93470",
+    "storage_bucket": "dnd2048-93470.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:275839170462:android:48eb4eefecac93132fc88f",
+        "android_client_info": {
+          "package_name": "com.dnd2048"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "275839170462-1i2frn4dtshpvf0cl6ott8di8ciosjeo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8aSCV52mrHAnNjuyer8w2UT4tfUuuvmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "275839170462-1i2frn4dtshpvf0cl6ott8di8ciosjeo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
